@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulário Confirmação</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <label for="primeiro_nome">Primeiro Nome:</label>
+        <input type="text" name="primeiro_nome" id="primeiro_nome" required>
+
+        <label for="numero_whatsapp">Whatsapp:</label>
+        <input type="text" name="numero_whatsapp" id="numero_whatsapp" required>
+
+        <button type="submit">Confirnmar Presença</button>
+    </form>
+</body>
+</html>
