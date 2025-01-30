@@ -33,6 +33,29 @@ def log_erro_whatsapp(nome, whatsapp):
             file.write(f'\n\n========== {hora} ==========\n{r.text}\n\n{nome} - {whatsapp} - {horario}')
 
 
+def msg_convidado_confirmado(mensagem):
+    webhook = 'https://n8nwebhook.star.dev.br/webhook/envia_confirmacao'
+    # webhook = 'https://n8n.star.dev.br/webhook-test/envia_confirmacao' # teste
+
+    horario = datetime.now()
+
+    r = requests.post(webhook, {
+        'hora': horario,
+        'mensagem': mensagem
+    })
+
+    if r.status_code == 200:
+        # db.update_transaction(id_transaction, 'status', 'ENVIADO')
+        print(f'Mensagem confirmação enviada.')
+        # time.sleep(random.randint(3, 10))
+    else:
+        print('STATUS:', r.status_code)
+        # time.sleep(random.randint(3, 10))
+        hora = datetime.now()
+        with open(file='LOG_erros_confirmação.txt', mode='a', encoding='utf-8') as file:
+            file.write(f'\n\n========== {hora} ==========\n{r.text}\n\n{mensagem} - {horario}')
+
+
 def confirma_presenca(request, hash_evento):
     evento = get_object_or_404(Festa, hash_evento=hash_evento)
     convidados = evento.convidados.all()
@@ -80,12 +103,18 @@ def confirma_presenca(request, hash_evento):
         convidado.rsvp = True
         convidado.save()
 
+        # MANDA WHATSAPP DE CONFIRMAÇÃO
+        msg_confirmacao = f'Convidado {convidado.nome} {convidado.sobrenome} confirmado! Whatsapp: {convidado.telefone}'
+        msg_convidado_confirmado(msg_confirmacao)
+
         #  CONFIRMA PARENTES
         for parente in lista_parentes:
             parente_id = parente.replace('parente_rsvp_', '')
             parente = get_object_or_404(Parente, id=parente_id)
             parente.rsvp = True
             parente.save()
+            msg_confirmacao = f'Convidado {convidado.nome} {convidado.sobrenome} confirmou a presença de {parente.nome}! Whatsapp: {convidado.telefone}'
+            msg_convidado_confirmado(msg_confirmacao)
 
         # confirma_form = ConfirmaConvidadoForm(request.POST, instance=convidado)
         # if confirma_form.is_valid():

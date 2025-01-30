@@ -12,7 +12,7 @@ class ParenteInline(admin.TabularInline):
 
 
 class ParenteAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'rsvp')
+    list_display = ('nome', 'convidado', 'rsvp')
     # search_fields = ('nome', 'email')
     # list_filter = ('evento', 'rsvp')
 
