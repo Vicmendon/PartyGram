@@ -1,0 +1,60 @@
+{% extends 'base.html' %} {% load static %}
+
+{% block title %}Login - PartyGram{% endblock %}
+
+{% block content %}
+<section class="banner" style="background-image:url(https://placehold.co/1920x300)">
+  <div class="container">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="index.html">Início</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Fale Conosco</li>
+    </ol>
+    <h2>Fale Conosco</h2>
+  </div>
+</section>
+
+<section class="gap">
+   <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="box login">
+            <h3>Faça login na sua conta</h3>
+            <form>
+              <input type="email" name="email" placeholder="Usuário ou endereço de e-mail">
+              <input type="password" name="password" placeholder="Senha">
+              <div class="remember">
+                <div class="first">
+                  <input type="checkbox" name="checkbox" id="checkbox">
+                  <label for="checkbox">Lembrar-me</label>
+                </div>
+                <div class="second">
+                  <a href="javascript:void(0)">Esqueceu a senha?</a>
+                </div>
+              </div>
+              <button type="submit" class="btn"><span>Entrar</span></button>
+            </form>
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="box register">
+            <div class="parallax" style="background-image: url(assets/img/patron.jpg)"></div>
+            <h3>Crie sua conta</h3>
+            <form>
+              <input type="text" name="text" placeholder="Nome Completo">
+              <input type="email" name="email" placeholder="Usuário ou endereço de e-mail">
+              <input type="password" name="password" placeholder="Senha">
+              <p>Seus dados pessoais serão usados para melhorar sua experiência neste site, gerenciar o acesso à sua conta e para outras finalidades descritas em nossa política de privacidade.</p>
+              <button type="submit" class="btn two"><span>Registrar</span></button>
+            </form>
+          </div>
+        </div>
+      </div>
+   </div>
+</section>
+
+{% endblock %}
+
+

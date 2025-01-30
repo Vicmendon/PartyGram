@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import User
 from django.db.models import Count
 from convidado.models import Convidado
 import random
@@ -19,7 +19,7 @@ class Festa(models.Model):
     ]
 
     hash_evento = models.CharField(max_length=20, default=gerar_hash_evento)
-    organizador = models.ForeignKey('auth.User', related_name='festas', on_delete=models.CASCADE)
+    organizador = models.ForeignKey(User, related_name='festas', on_delete=models.CASCADE)
     nome = models.CharField(max_length=200)
     data = models.DateTimeField()
     horas = models.DecimalField(max_digits=2, decimal_places=0, default=4)

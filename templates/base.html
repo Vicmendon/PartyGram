@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PartyGram - Login{% endblock %}</title>
+  <link rel="icon" href="{% static 'assets/img/favicon.png' %}">
+  <!-- CSS includes -->
+  {% block header %}
+    {% include 'css.html' %}
+  {% endblock %}
+</head>
+<body> 
+  <span class="loader"></span>
+
+  <!-- header -->
+  {% include 'header.html' %}
+  
+  <!-- Conteúdo dinâmico -->
+  <main>
+    {% block content %}
+
+    {% endblock %}
+    <!-- progress -->
+    <div id="progress">
+        <span id="progress-value"><i class="fa-solid fa-arrow-up"></i></span>
+    </div>
+  </main>
+  {% block footer %}
+  <!-- Footer Include -->
+    {% include 'footer.html' %}
+  <!-- JS Includes -->
+    {% include 'script.html' %}
+  {% endblock %}
+</body>
+</html>
