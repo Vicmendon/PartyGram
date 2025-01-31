@@ -35,6 +35,11 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+#config de backends
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailAuthBackend',  # Backend customizado para login com e-mail
+    'django.contrib.auth.backends.ModelBackend',  # Backend padrão do Django (opcional)
+]
 
 # Application definition
 
@@ -49,7 +54,8 @@ INSTALLED_APPS = [
     'evento',
     'convidado',
     'midia',
-    'users'
+    'users',
+    'home'
 ]
 
 MIDDLEWARE = [
@@ -67,7 +73,7 @@ ROOT_URLCONF = 'mainproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

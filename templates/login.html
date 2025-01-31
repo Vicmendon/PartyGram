@@ -3,53 +3,56 @@
 {% block title %}Login - PartyGram{% endblock %}
 
 {% block content %}
-<section class="banner" style="background-image:url(https://placehold.co/1920x300)">
-  <div class="container">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a href="index.html">Início</a>
-      </li>
-      <li class="breadcrumb-item active" aria-current="page">Fale Conosco</li>
-    </ol>
-    <h2>Fale Conosco</h2>
-  </div>
-</section>
 
 <section class="gap">
    <div class="container">
       <div class="row">
-        <div class="col-lg-6">
-          <div class="box login">
-            <h3>Faça login na sua conta</h3>
-            <form>
-              <input type="email" name="email" placeholder="Usuário ou endereço de e-mail">
-              <input type="password" name="password" placeholder="Senha">
-              <div class="remember">
-                <div class="first">
-                  <input type="checkbox" name="checkbox" id="checkbox">
-                  <label for="checkbox">Lembrar-me</label>
-                </div>
-                <div class="second">
-                  <a href="javascript:void(0)">Esqueceu a senha?</a>
+        <div class="col-lg-6 row">
+          <form action="{% url 'login' %}" method="POST" class='d-flex flex-column justify-content-between'>
+          <div class="col-lg-10 p-12 bg-white rounded-4">
+            <h3 class="fs-1 mb-6">Faça login na sua conta</h3>
+              {% csrf_token %}
+              <div>
+                <input  class="form-control mb-4 rounded-4" type="email" name="email" placeholder="Usuário ou endereço de e-mail">
+                <input class="form-control mb-6 rounded-4" type="password" name="senha" placeholder="Senha">
+                <div class="d-flex flex-center justify-content-between mb-4">
+                  <div class="form-check form-switch d-flex flex-center">
+                    <input class="form-check-input" name="lembre" type="checkbox" role="switch" id="lembredemin">
+                    <label class="form-check-label fs-5 ms-4" for="lembredemin">Lembre de mim</label>
+                  </div>
+                  <div class="second fs-5">
+                    <a href="javascript:void(0)">Esqueceu a senha?</a>
+                  </div>
                 </div>
               </div>
-              <button type="submit" class="btn"><span>Entrar</span></button>
-            </form>
-          </div>
+              <button type="submit" class="btn btn-info w-100"><span>Entrar</span></button>
+            </div>
+          </form>
         </div>
-        
-        <div class="col-lg-6">
-          <div class="box register">
-            <div class="parallax" style="background-image: url(assets/img/patron.jpg)"></div>
-            <h3>Crie sua conta</h3>
-            <form>
-              <input type="text" name="text" placeholder="Nome Completo">
-              <input type="email" name="email" placeholder="Usuário ou endereço de e-mail">
-              <input type="password" name="password" placeholder="Senha">
-              <p>Seus dados pessoais serão usados para melhorar sua experiência neste site, gerenciar o acesso à sua conta e para outras finalidades descritas em nossa política de privacidade.</p>
-              <button type="submit" class="btn two"><span>Registrar</span></button>
-            </form>
-          </div>
+        <div class="col-lg-6 row border-5 border-start border-info">
+          <form action="{% url 'login' %}" method="POST" class='d-flex flex-column justify-content-between'>
+          <div class="col-lg-10 p-12 bg-white rounded-4">
+            <h3 class="fs-1 mb-1">Cadastre-se a sua conta</h3>
+            <p class=" mb-6 fs-5">Bem-vindo! Por favor, insira seus detalhes</p>
+              {% csrf_token %}
+              <div>
+                <div class="input-group">
+                  <input class="form-control form-control-solid mb-4 rounded-4 col-md-6" type="text" name="nome" placeholder="Nome">
+                  <input class="form-control form-control-solid mb-4 rounded-4 col-md-6 ms-2" type="text" name="sobrenome" placeholder="Sobrenome">
+                </div>
+                <input  class="form-control form-control-solid mb-4 rounded-4" type="email" name="email" placeholder="endereço de e-mail">
+                <input class="form-control form-control-solid mb-4 rounded-4" type="password" name="senha" placeholder="Senha">
+                <input class="form-control form-control-solid mb-6 rounded-4" type="password" name="Confirm_senha" placeholder="Confirme a senha">
+                <div class="d-flex flex-center justify-content-between mb-4">
+                  <div class="form-check form-check-custom form-check-solid form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="flexRadioLg"/>
+                    <label class="form-check-label fs-5 ms-4" for="condicao">Ao criar uma conta, você concorda com os <a href="javascript:void(0)">Termos e Condições</a> e nosso <a href="javascript:void(0)">política de Privacidade</a></label>
+                </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-success w-100"><span>Registra-se</span></button>
+            </div>
+          </form>
         </div>
       </div>
    </div>
