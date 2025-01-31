@@ -24,8 +24,16 @@ class AuthLogin(View):
         email = request.POST.get("email")
         senha = request.POST.get("senha")
         user = authenticate(request, email=email, password=senha)
-
         if user:
+            lembre = request.POST.get("lembre") == "on"
+
+            if not lembre:
+                request.session.set_expiry(0)  # Expira ao fechar a guia
+                request.session.flush()  # Remove todos os dados da sessão
+                print("Sessão configurada para expirar ao fechar o navegador.")
+            else:
+                request.session.set_expiry(1209600)  # 2 semanas
+                print("Sessão configurada para durar 2 semanas.")
             login(request, user)
             next_url = request.GET.get("next") or "home"
             return redirect(next_url)
@@ -46,12 +54,12 @@ class AuthRegister(View):
         senha = request.POST.get("senha")
         nome = request.POST.get("nome")
         sobrenome = request.POST.get("sobrenome")
-
+        print(email, senha, nome, sobrenome)
         # Verifica se já existe um usuário com o mesmo e-mail
         if User.objects.filter(email=email).exists():
             return JsonResponse({"success": False, "message": "Este e-mail já está cadastrado."}, status=400)
         
         # Cria o usuário com senha criptografada
         user = User.objects.create_user(nome=nome, sobrenome=sobrenome, email=email, password=senha)
-        messages.success(request, "Conta criada com sucesso! Faça login.")
-        return redirect('home')
+        login(request, user)
+        return JsonResponse({"success": True, "message": "Conta criada com sucesso!"}, status=200)
