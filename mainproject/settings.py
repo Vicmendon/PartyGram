@@ -148,3 +148,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"  # Pode ser 'db' ou 'cache'
+SESSION_COOKIE_AGE = 1209600  # 2 semanas (se lembrar do usuário)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Por padrão, False (iremos modificar dinamicamente)
+SESSION_COOKIE_SECURE = False  # Se for HTTPS, precisa ser True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
