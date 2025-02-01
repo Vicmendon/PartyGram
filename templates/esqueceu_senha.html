@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% load static %}
+
+{% block title %}Login - PartyGram{% endblock %}
+
+{% block content %}
+
+<section class="mt-10 mb-10 h-550px">
+   <div class="container">
+      <div id="conteiner_email" class="row justify-content-center">
+        <div class="col-lg-6 row">
+          <form id='EnviarCodeForm' action="{% url 'recovery' %}" method="POST" class='d-flex justify-content-center'>
+            <div class="col-lg-10 p-12 bg-white rounded-4">
+            <h4 class="fs-3 mb-6">Digite seu email abaixo para recuperar a senha</h4>
+              {% csrf_token %}
+              <div>
+                <div class="fv-row text-center mb-4">
+                   <input class="form-control rounded-4 mask-email" type="email" name="email" placeholder="Endereço de e-mail">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-info w-100"><span>Enviar Email</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div id="conteiner_code" class="row justify-content-center d-none">
+        <div class="col-lg-6 row">
+          <form id='CodeForm' action="{% url 'recovery' %}" method="PUT" class='d-flex justify-content-center'>
+            <div class="col-lg-10 p-12 bg-white rounded-4">
+            <h4 class="fs-4 mb-6 text-info">Digite o codigo enviado ao seu email</h4>
+              {% csrf_token %}
+              <div>
+                <div class="fv-row text-center">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" name="code" id="code" placeholder="" value=""/>
+                        <label class="text-muted" for="code">Codigo de verificacão</label>
+                    </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-info w-100 mt-4"><span>Enviar Codigo</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+   </div>
+</section>
+
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script type="module" src="{% static 'assets/js/custom/esqueceu-senha.js' %}"></script>
+{% endblock %}

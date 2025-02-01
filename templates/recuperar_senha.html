@@ -1,0 +1,34 @@
+{% extends 'base.html' %} {% load static %}
+
+{% block title %}Login - PartyGram{% endblock %}
+
+{% block content %}
+
+<section class="mt-10 mb-10 h-550px">
+   <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 row">
+          <form id="RecuperarForm" action="{% url 'chage-password' %}" method="POST" class='d-flex justify-content-center'>
+          <div class="col-lg-10 p-12 bg-white rounded-4">
+            <h3 class="fs-1 mb-1">Altere sua senha de acesso</h3>
+            <p class=" mb-6 fs-5">Por favor, insira seus detalhes</p>
+              {% csrf_token %}
+              <div class="fv-row text-center mb-4">
+                  <input type="hidden" name="hash_code" value="{{ hash }}">
+                  <input class="form-control form-control-solid mb-4 rounded-4" type="password" id="senha" name="senha" placeholder="Senha">
+                  <input class="form-control form-control-solid mb-6 rounded-4" type="password" id="confirm_senha" name="confirm_senha" placeholder="Confirme a senha">
+              </div>
+              <button type="submit" class="btn btn-success w-100"><span>Alterar</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+   </div>
+</section>
+
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<script type="module" src="{% static 'assets/js/custom/recuperar-senha.js' %}"></script>
+{% endblock %}

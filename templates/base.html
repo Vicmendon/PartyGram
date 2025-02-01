@@ -11,7 +11,20 @@
     {% include 'css.html' %}
   {% endblock %}
 </head>
-<body> 
+<body>
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        {% for message in messages %}
+        <div class="toast align-items-center text-bg-danger text-white border-0 fade show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
   <span class="loader"></span>
 
   <!-- header -->
@@ -26,21 +39,7 @@
     <div id="progress">
         <span id="progress-value"><i class="fa-solid fa-arrow-up"></i></span>
     </div>
-    <!-- Toast Container (Bootstrap) -->
-    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
-        <div id="toast-container" class="toast-container">
-            {% for message in messages %}
-            <div class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        {{ message }}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+
   </main>
   {% block footer %}
   <!-- Footer Include -->
