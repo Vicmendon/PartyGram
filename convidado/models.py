@@ -2,13 +2,19 @@ from django.db import models
 
 
 class Convidado(models.Model):
+    RSVP_CHOICES = [
+        ('SIM', 'Vai'),
+        ('NÃO', 'Não vai'),
+        ('IND', 'Indefinido')
+    ]
+
     evento = models.ForeignKey('evento.Festa', related_name='convidados', on_delete=models.CASCADE)
-    telefone = models.CharField(max_length=11, blank=True, null=True)
+    telefone = models.CharField(max_length=11, blank=True, null=True, unique=True)
     email = models.EmailField(blank=True, null=True)
     nome = models.CharField(max_length=100)
     sobrenome = models.CharField(max_length=100)
     cervejeiro = models.BooleanField(default=False)
-    rsvp = models.BooleanField(default=False)
+    rsvp = models.CharField(max_length=3, choices=RSVP_CHOICES, default='IND')
     convite_enviado = models.BooleanField(default=False)
 
     def __str__(self):
@@ -16,6 +22,12 @@ class Convidado(models.Model):
 
 
 class Parente(models.Model):
+    RSVP_CHOICES = [
+        ('SIM', 'Vai'),
+        ('NÃO', 'Não vai'),
+        ('IND', 'Indefinido')
+    ]
+    
     IDADE_CHOICES = [
         ('AD', 'Adulto'),
         ('CR', 'Criança'),
@@ -26,7 +38,7 @@ class Parente(models.Model):
     nome = models.CharField(max_length=100)
     idade = models.CharField(max_length=2, choices=IDADE_CHOICES, default='AD')
     cervejeiro = models.BooleanField(default=False)
-    rsvp = models.BooleanField(default=False)
+    rsvp = models.CharField(max_length=3, choices=RSVP_CHOICES, default='IND')
 
     def __str__(self):
         return f'{self.nome} ({self.convidado})'

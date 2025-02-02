@@ -38,8 +38,12 @@ class Festa(models.Model):
         return self.convidados.count() + sum([convidado.parentes.count() for convidado in self.convidados.all()])
 
     def total_confirmados(self):
-        convidados_confirmados = self.convidados.filter(rsvp=True)
-        return sum([1 for convidado in convidados_confirmados] + [1 for convidado in convidados_confirmados for parente in convidado.parentes.filter(convidado__rsvp=True)])
+        convidados_confirmados = self.convidados.filter(rsvp='SIM')
+        return sum([1 for convidado in convidados_confirmados] + [1 for convidado in convidados_confirmados for parente in convidado.parentes.filter(convidado__rsvp='SIM')])
+    
+    def total_recusaram(self):
+        convidados_recusaram = self.convidados.filter(rsvp="NÃO")
+        return sum([1 for convidado in convidados_recusaram] + [1 for convidado in convidados_recusaram for parente in convidado.parentes.filter(convidado__rsvp='NÃO')])
 
     def total_cervejeiros(self):
         convidados_cervejeiros = self.convidados.filter(cervejeiro=True)
