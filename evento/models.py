@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import User
 from django.db.models import Count
 from convidado.models import Convidado
 import random
@@ -19,7 +19,7 @@ class Festa(models.Model):
     ]
 
     hash_evento = models.CharField(max_length=20, default=gerar_hash_evento)
-    organizador = models.ForeignKey('auth.User', related_name='festas', on_delete=models.CASCADE)
+    organizador = models.ForeignKey(User, related_name='festas', on_delete=models.CASCADE)
     nome = models.CharField(max_length=200)
     data = models.DateTimeField()
     horas = models.DecimalField(max_digits=2, decimal_places=0, default=4)
@@ -38,8 +38,12 @@ class Festa(models.Model):
         return self.convidados.count() + sum([convidado.parentes.count() for convidado in self.convidados.all()])
 
     def total_confirmados(self):
-        convidados_confirmados = self.convidados.filter(rsvp=True)
-        return sum([1 for convidado in convidados_confirmados] + [1 for convidado in convidados_confirmados for parente in convidado.parentes.filter(convidado__rsvp=True)])
+        convidados_confirmados = self.convidados.filter(rsvp='SIM')
+        return sum([1 for convidado in convidados_confirmados] + [1 for convidado in convidados_confirmados for parente in convidado.parentes.filter(convidado__rsvp='SIM')])
+    
+    def total_recusaram(self):
+        convidados_recusaram = self.convidados.filter(rsvp="NÃO")
+        return sum([1 for convidado in convidados_recusaram] + [1 for convidado in convidados_recusaram for parente in convidado.parentes.filter(convidado__rsvp='NÃO')])
 
     def total_cervejeiros(self):
         convidados_cervejeiros = self.convidados.filter(cervejeiro=True)

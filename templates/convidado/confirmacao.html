@@ -1,0 +1,349 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Presença - {{ evento.nome }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url("{% static 'convidado/images/fundo-pag-2.png' %}") no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+        /* Adiciona uma camada sobre a imagem com transparência */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(14, 56, 3, 0.05); /* Ajuste a opacidade e cor aqui */
+        }
+        .content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive; /* Definir uma fonte cursiva */
+            font-size: 39px; /* Tamanho da fonte */
+            color: #ff9900; /* Cor */
+            font-weight: bold;
+            
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .overlay .spinner-border {
+            color: #fff;
+        }
+
+        .clickable {
+            cursor: pointer;
+        }
+
+        .font-shadow-2 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.438);
+            color: rgb(2, 83, 15);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+
+</head>
+<body class="content">
+
+    <!-- SPINNER -->
+    <div id="spinnerOverlay" style="
+        display: none; /* Inicialmente invisível */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.5); /* Fundo preto com transparência de 50% */
+        z-index: 9999; /* Garante que está à frente de todos os elementos */
+        align-items: center;
+        justify-content: center;
+    ">
+        <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Carregando...</span>
+        </div>
+    </div>
+    <!-- FIM DO SPINNER -->
+
+
+    <div class="content">
+        <div class="container mb-5 mt-5">
+            <h1>{{ evento.nome }}</h1>
+        </div>
+        <h4 class="mb-4" style="color: #ffffff;">Confirmação de Presença</h4>
+
+        <!-- MENSAGEM ALERT -->
+        {% if mensagem %}
+        <div id="alert-msg" class="alert alert-info">{{ mensagem }}</div>
+        {% endif %}
+        <!-- FIM DA MENSAGEM -->
+
+        <!-- FORM DE PESQUISA -->
+        <form method="post" id="pesquiseForm">
+            {% csrf_token %}
+            <div class="row mb-3 align-items-center align-text-left">
+                <input type="text" name="nome" maxlength="16" required="" id="nome" class="form-control" placeholder="Seu primeiro nome">
+            </div>
+            <div class="row mb-3 align-items-center">
+                <input type="number" name="telefone" maxlength="16" required="" id="telefone"  class="form-control" placeholder="(21) 9-9999-9999">
+            </div>
+            <div class="row mb-3 align-items-center">
+                <button type="submit" name="buscar" class="btn btn-primary" onclick="showSpinnerAndSubmit('pesquisarForm')">Pesquisar</button>
+            </div>
+        </form>
+        <!-- FIM DO FORM DE PESQUISA-->
+
+        {% if convidado %}
+        <hr>
+
+        <div class="container">
+            <h4 class="mb-4" style="color: #ffffff;">Convidados encontrados</h4>
+        </div>
+
+        <!-- TABELA DE CONVIDADOS -->
+        <div class="grid rounded bg-white bg-opacity-50 p-2 mb-3 fw-bold font-shadow-2">
+            <!-- ROW DO CONVIDADO -->
+            <div class="row p-3">
+                <div class="col-8 text-start">
+                    <p class="mb-0 ml-0 fs-4">{{ convidado.nome }}</p>
+                </div>
+                <div class="col-2" id="div-confirma-convidado-{{ convidado.id }}">
+                    <svg class="clickable" id="confirma-convidado-{{ convidado.id }}" data-id="{{ convidado.id }}" data-type="confirma" data-convidado="convidado" fill="#ffffff" width="25px" height="25px" viewBox="0 0 56.00 56.00" stroke="#ffffff" stroke-width="1.3439999999999999" onclick="toggleSVG"><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.56"></g><g id="SVGRepo_iconCarrier"><path d="M 43.9374 51.7656 C 45.7655 51.3438 47.6171 50.1484 47.6171 47.8984 C 47.6171 46.9844 47.3593 46.3516 47.0546 45.8125 C 46.8671 45.5078 46.8905 45.2734 47.1718 45.1563 C 48.6481 44.5000 49.8673 43.1875 49.8673 41.2891 C 49.8673 40.2344 49.5860 39.2735 49.0470 38.5937 C 48.7887 38.2422 48.8358 37.9610 49.2577 37.7032 C 50.3593 37.0937 51.0625 35.7344 51.0625 34.1875 C 51.0625 33.1094 50.7107 31.9141 50.0545 31.3281 C 49.7031 31.0000 49.7732 30.7656 50.1716 30.4375 C 50.9454 29.8516 51.3673 28.7266 51.3673 27.3906 C 51.3673 25.0937 49.5860 23.2422 47.2421 23.2422 L 38.8749 23.2422 C 36.7655 23.2422 35.3358 22.1406 35.3358 20.4063 C 35.3358 17.1719 39.3436 11.3594 39.3436 7.1641 C 39.3436 4.9844 37.9140 3.6719 36.0624 3.6719 C 34.3749 3.6719 33.5077 4.8437 32.5936 6.6250 C 29.1014 13.5156 24.3671 19.0703 20.7811 23.8281 C 17.7343 27.9063 16.2343 31.3281 16.1640 36.9532 C 16.0467 45.6016 23.0546 52.1875 34.0702 52.2813 L 37.3280 52.3047 C 40.3983 52.3281 42.6483 52.0937 43.9374 51.7656 Z M 4.6327 37.1172 C 4.6327 44.1484 8.9921 50.0313 14.8749 50.0313 L 19.0702 50.0313 C 14.8280 46.9375 12.8827 42.2500 12.9764 36.8828 C 13.0467 30.9297 15.3671 26.6875 17.4296 24.1094 L 13.9843 24.1094 C 8.7108 24.1094 4.6327 29.8281 4.6327 37.1172 Z"></path></g></svg>
+                </div>
+                <div class="col-2 svg" id="div-recusa-convidado-{{ convidado.id }}">
+                    <svg class="clickable" id="recusa-convidado-{{ convidado.id }}" data-id="{{ convidado.id }}" data-type="recusa" data-convidado="convidado" fill="#ffffff" width="25px" height="25px" viewBox="0 0 56.00 56.00" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" transform="rotate(180)" stroke-width="1.3439999999999999"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.56"></g><g id="SVGRepo_iconCarrier"><path d="M 43.9374 51.7656 C 45.7655 51.3438 47.6171 50.1484 47.6171 47.8984 C 47.6171 46.9844 47.3593 46.3516 47.0546 45.8125 C 46.8671 45.5078 46.8905 45.2734 47.1718 45.1563 C 48.6481 44.5000 49.8673 43.1875 49.8673 41.2891 C 49.8673 40.2344 49.5860 39.2735 49.0470 38.5937 C 48.7887 38.2422 48.8358 37.9610 49.2577 37.7032 C 50.3593 37.0937 51.0625 35.7344 51.0625 34.1875 C 51.0625 33.1094 50.7107 31.9141 50.0545 31.3281 C 49.7031 31.0000 49.7732 30.7656 50.1716 30.4375 C 50.9454 29.8516 51.3673 28.7266 51.3673 27.3906 C 51.3673 25.0937 49.5860 23.2422 47.2421 23.2422 L 38.8749 23.2422 C 36.7655 23.2422 35.3358 22.1406 35.3358 20.4063 C 35.3358 17.1719 39.3436 11.3594 39.3436 7.1641 C 39.3436 4.9844 37.9140 3.6719 36.0624 3.6719 C 34.3749 3.6719 33.5077 4.8437 32.5936 6.6250 C 29.1014 13.5156 24.3671 19.0703 20.7811 23.8281 C 17.7343 27.9063 16.2343 31.3281 16.1640 36.9532 C 16.0467 45.6016 23.0546 52.1875 34.0702 52.2813 L 37.3280 52.3047 C 40.3983 52.3281 42.6483 52.0937 43.9374 51.7656 Z M 4.6327 37.1172 C 4.6327 44.1484 8.9921 50.0313 14.8749 50.0313 L 19.0702 50.0313 C 14.8280 46.9375 12.8827 42.2500 12.9764 36.8828 C 13.0467 30.9297 15.3671 26.6875 17.4296 24.1094 L 13.9843 24.1094 C 8.7108 24.1094 4.6327 29.8281 4.6327 37.1172 Z"></path></g></svg>
+                </div>
+            </div>
+            <!-- FIM DA ROW DO CONVIDADO -->
+
+            <!-- ROWS DOS PARENTES -->
+            {% for parente in parentes %}
+            <div class="row p-3">
+                <div class="col-8 text-start">
+                    <p class="mb-0 ml-0 fs-4">{{ parente.nome }}</p>
+                </div>
+                <div class="col-2" id="div-confirma-parente-{{ parente.id }}">
+                    <svg class="clickable" id="confirma-parente-{{ parente.id }}" data-id="{{ parente.id }}" data-type="confirma" data-convidado="parente" fill="#ffffff" width="25px" height="25px" viewBox="0 0 56.00 56.00" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" transform="rotate(0)" stroke-width="1.3439999999999999"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.56"></g><g id="SVGRepo_iconCarrier"><path d="M 43.9374 51.7656 C 45.7655 51.3438 47.6171 50.1484 47.6171 47.8984 C 47.6171 46.9844 47.3593 46.3516 47.0546 45.8125 C 46.8671 45.5078 46.8905 45.2734 47.1718 45.1563 C 48.6481 44.5000 49.8673 43.1875 49.8673 41.2891 C 49.8673 40.2344 49.5860 39.2735 49.0470 38.5937 C 48.7887 38.2422 48.8358 37.9610 49.2577 37.7032 C 50.3593 37.0937 51.0625 35.7344 51.0625 34.1875 C 51.0625 33.1094 50.7107 31.9141 50.0545 31.3281 C 49.7031 31.0000 49.7732 30.7656 50.1716 30.4375 C 50.9454 29.8516 51.3673 28.7266 51.3673 27.3906 C 51.3673 25.0937 49.5860 23.2422 47.2421 23.2422 L 38.8749 23.2422 C 36.7655 23.2422 35.3358 22.1406 35.3358 20.4063 C 35.3358 17.1719 39.3436 11.3594 39.3436 7.1641 C 39.3436 4.9844 37.9140 3.6719 36.0624 3.6719 C 34.3749 3.6719 33.5077 4.8437 32.5936 6.6250 C 29.1014 13.5156 24.3671 19.0703 20.7811 23.8281 C 17.7343 27.9063 16.2343 31.3281 16.1640 36.9532 C 16.0467 45.6016 23.0546 52.1875 34.0702 52.2813 L 37.3280 52.3047 C 40.3983 52.3281 42.6483 52.0937 43.9374 51.7656 Z M 4.6327 37.1172 C 4.6327 44.1484 8.9921 50.0313 14.8749 50.0313 L 19.0702 50.0313 C 14.8280 46.9375 12.8827 42.2500 12.9764 36.8828 C 13.0467 30.9297 15.3671 26.6875 17.4296 24.1094 L 13.9843 24.1094 C 8.7108 24.1094 4.6327 29.8281 4.6327 37.1172 Z"></path></g></svg>
+                </div>
+                <div class="col-2" id="div-recusa-parente-{{ parente.id }}">
+                    <svg class="clickable" id="recusa-parente-{{ parente.id }}" data-id="{{ parente.id }}" data-type="recusa" data-convidado="parente" fill="#ffffff" width="25px" height="25px" viewBox="0 0 56.00 56.00" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff" transform="rotate(180)" stroke-width="1.3439999999999999"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.56"></g><g id="SVGRepo_iconCarrier"><path d="M 43.9374 51.7656 C 45.7655 51.3438 47.6171 50.1484 47.6171 47.8984 C 47.6171 46.9844 47.3593 46.3516 47.0546 45.8125 C 46.8671 45.5078 46.8905 45.2734 47.1718 45.1563 C 48.6481 44.5000 49.8673 43.1875 49.8673 41.2891 C 49.8673 40.2344 49.5860 39.2735 49.0470 38.5937 C 48.7887 38.2422 48.8358 37.9610 49.2577 37.7032 C 50.3593 37.0937 51.0625 35.7344 51.0625 34.1875 C 51.0625 33.1094 50.7107 31.9141 50.0545 31.3281 C 49.7031 31.0000 49.7732 30.7656 50.1716 30.4375 C 50.9454 29.8516 51.3673 28.7266 51.3673 27.3906 C 51.3673 25.0937 49.5860 23.2422 47.2421 23.2422 L 38.8749 23.2422 C 36.7655 23.2422 35.3358 22.1406 35.3358 20.4063 C 35.3358 17.1719 39.3436 11.3594 39.3436 7.1641 C 39.3436 4.9844 37.9140 3.6719 36.0624 3.6719 C 34.3749 3.6719 33.5077 4.8437 32.5936 6.6250 C 29.1014 13.5156 24.3671 19.0703 20.7811 23.8281 C 17.7343 27.9063 16.2343 31.3281 16.1640 36.9532 C 16.0467 45.6016 23.0546 52.1875 34.0702 52.2813 L 37.3280 52.3047 C 40.3983 52.3281 42.6483 52.0937 43.9374 51.7656 Z M 4.6327 37.1172 C 4.6327 44.1484 8.9921 50.0313 14.8749 50.0313 L 19.0702 50.0313 C 14.8280 46.9375 12.8827 42.2500 12.9764 36.8828 C 13.0467 30.9297 15.3671 26.6875 17.4296 24.1094 L 13.9843 24.1094 C 8.7108 24.1094 4.6327 29.8281 4.6327 37.1172 Z"></path></g></svg>
+                </div>
+            </div>
+            {% endfor %}
+            <!-- FIM DAS ROWS DOS PARENTES -->
+        </div>
+        <!-- FIM TABELA CONVIDADOS -->
+
+        <!-- FORM DE CONFIRMAÇÃO (OCULTO PARA O USUÁRIO) -->
+        <form method="post" id="confirmarForm">
+            {% csrf_token %}
+            <table class="table" hidden>
+                <thead class="bg-green">
+                    <th scope="col">Convidado</th>
+                    <th>Confirmar Presença</th>
+                </thead>
+                <tr class="table-secondary">
+                    <td>{{ convidado.nome }}</td>
+                    <td>
+                        <input type="text" name="convidado-{{ convidado.id }}" id="convidado-{{ convidado.id }}" value="">
+                    </td>
+                </tr>
+                {% for parente in parentes %}
+                <tr class="table-secondary">
+                    <td>{{ parente.nome }}</td>
+                    <td>
+                        <input type="text" name="parente-{{ parente.id }}" id="parente-{{ parente.id }}" value="">
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div class="row mb-5 align-items-center">
+                <button type="submit" name="confirmar" class="btn btn-primary" onclick="showSpinnerAndSubmit('confirmarForm')">Confirmar</button>
+            </div>
+        </form>
+        <!-- FIM DO FORM DE CONFIRMAÇÃO -->
+
+        <!-- MINI MAPA -->
+        <div class="">
+            <iframe width="100%" height="200" src="https://www.openstreetmap.org/export/embed.html?bbox=-43.05392861366273%2C-22.890406350467348%2C-43.04867148399354%2C-22.88829116951837&amp;layer=mapnik&amp;marker=-22.889348764113816%2C-43.051300048828125" style="border: 1px solid black"></iframe><br/>
+        </div>
+        <!-- FIM DO MINI MAPA -->
+
+        {% endif %}
+    </div>
+
+    <div>
+        <table id="tb-parentes" hidden>
+        {% for parente in parentes %}
+                <tr>
+                    <td>{{ parente.id }}</td>
+                    <td>{{ parente.nome }}</td>
+                    <td>{{ parente.rsvp }}</td>
+                </tr>
+        {% endfor %}
+        </table>
+        <table id="tb-convidados" hidden>
+            <tr>
+                <td>{{ convidado.id }}</td>
+                <td>{{ convidado.nome }}</td>
+                <td>{{ convidado.rsvp }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // Aguarda o DOM ser carregado
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("Página carregada")
+
+            setTimeout(function() {
+                console.log('Entrou no timer')
+                elem_alerta = document.querySelector('#alert-msg');
+                elem_alerta.remove();
+            }, 5000);
+
+            carregaDicionario();
+        });
+
+        function showSpinnerAndSubmit(formId) {
+        const overlay = document.getElementById('spinnerOverlay');
+        overlay.style.display = 'flex'; // Exibe o spinner
+        document.getElementById(formId).submit(); // Envia o formulário
+        }
+
+        // mudar cor do SVG
+        function mudarCorSVG(elem, cor) {
+            elem.setAttribute('fill', cor)
+            elem.setAttribute('stroke', cor)
+        }
+
+        
+        let convidado_principal = {
+            'id': '{{ convidado.id }}',
+            'nome': '{{ convidado.nome }}',
+            'rsvp': '{{ convidado.rsvp }}'
+        };
+        let lista_parentes = [];
+
+        // função para preencher value do form
+        function preencheFormValue(elem, valor) {
+            elem.setAttribute('value', valor);
+        }
+
+        // função para atualizar dicionário - não sei se é necessário
+        function atualizaDicionario(dicionario, id, valor) {   
+        }
+
+        // função para, no início, carregar a cor do SVG de acordo com o banco
+        function carregaDicionario() {
+            const tb_parentes = document.querySelector('#tb-parentes')
+            const tr_parentes = tb_parentes.querySelectorAll('tr')
+            
+            // preenche inicial convidado
+            const input_convidado = document.querySelector('#convidado-' + convidado_principal['id'])
+            preencheFormValue(input_convidado, `convidado-${convidado_principal['id']}-${convidado_principal['rsvp']}`)
+
+            // preenche cor do SVG do convidado
+            elem_confirma_convidado = document.querySelector(`#confirma-convidado-${convidado_principal['id']}`)
+            elem_recusa_convidado = document.querySelector(`#recusa-convidado-${convidado_principal['id']}`)
+            // se convidao estiver confirmado
+            if (convidado_principal['rsvp'] == 'SIM') {
+                mudarCorSVG(elem_confirma_convidado, '#0a7e01') // verde
+                mudarCorSVG(elem_recusa_convidado, '#ffffff')   // cinza
+            } else if (convidado_principal['rsvp'] == 'NÃO') {
+                mudarCorSVG(elem_confirma_convidado, '#ffffff') // cinza
+                mudarCorSVG(elem_recusa_convidado, '#cf0707')   // vermelho
+            } else {
+                mudarCorSVG(elem_confirma_convidado, '#ffffff') // cinza
+                mudarCorSVG(elem_recusa_convidado, '#ffffff')   // cinza
+            }
+
+            // tratamento dos parentes, num FOR
+            tr_parentes.forEach((tr) => {
+                const td_parentes = tr.querySelectorAll('td')
+                    id_parente = td_parentes[0].textContent
+                    nome_parente = td_parentes[1].textContent
+                    rsvp_parente = td_parentes[2].textContent
+                
+                    lista_parentes.push({
+                    'id': id_parente,
+                    'nome': nome_parente,
+                    'rsvp': rsvp_parente
+                })
+
+                    // preenche inicial de cada parente
+                    const input_parente = document.querySelector('#parente-' + id_parente)
+                    preencheFormValue(input_parente, `parente-${id_parente}-${rsvp_parente}`)
+
+                    // preenche cor do SVG do convidado
+                    elem_confirma_parente = document.querySelector(`#confirma-parente-${id_parente}`)
+                    elem_recusa_parente = document.querySelector(`#recusa-parente-${id_parente}`)
+                    // se convidao estiver confirmado
+                    if (rsvp_parente == 'SIM') {
+                        mudarCorSVG(elem_confirma_parente, '#0a7e01') // verde
+                        mudarCorSVG(elem_recusa_parente, '#ffffff')   // cinza
+                    } else if (rsvp_parente == 'NÃO') {
+                        mudarCorSVG(elem_confirma_parente, '#ffffff') // cinza
+                        mudarCorSVG(elem_recusa_parente, '#cf0707')   // vermelho
+                    } else {
+                        mudarCorSVG(elem_confirma_parente, '#ffffff') // cinza
+                        mudarCorSVG(elem_recusa_parente, '#ffffff')   // cinza
+                    }
+            })
+            console.log(lista_parentes)
+        }
+
+        const btns_svg = document.querySelectorAll('.clickable');
+
+        // adiciona todos os SVGs ao EventListener de click
+        btns_svg.forEach((btn_elem) => btn_elem.addEventListener("click", toggleSVG, btn_elem));
+
+        // função para alternar os botões
+        function toggleSVG(elem) {
+            //console.log('oooooi', elem)
+            const clickedIcon = elem.target.closest('svg'); // busca o elemento SVG mais perto do click
+
+            if (clickedIcon) {
+                const iconId = clickedIcon.getAttribute('data-id');
+                const iconFill = clickedIcon.getAttribute('fill');
+                const iconType = clickedIcon.getAttribute('data-type');
+                const iconFamilia = clickedIcon.getAttribute('data-convidado');
+                console.log(iconId, iconFill, iconType, iconFamilia)
+                const parentElem = document.querySelector('#div-' + iconType + '-' + iconFamilia +  '-' + iconId)
+                //console.log(parentElem)
+
+                if (iconFill == "#ffffff" && iconType == 'confirma') {  // se estiver cinza e confirma, fica verde e apaga o vizinho
+                    const elemVizinho = document.querySelector('#recusa-' + iconFamilia + '-' +  iconId)
+                    mudarCorSVG(elemVizinho, '#ffffff')
+                    mudarCorSVG(clickedIcon, '#0a7e01')
+                    elem_form = document.querySelector(`#${iconFamilia}-${iconId}`)
+                    preencheFormValue(elem_form, `${iconFamilia}-${iconId}-SIM`)
+                } else if (iconFill == "#ffffff" && iconType == 'recusa') { // se estiver cinza e for recusa, fica vermelho e apaga o vizinho
+                    const elemVizinho = document.querySelector('#confirma-' + iconFamilia + '-' +  iconId)
+                    mudarCorSVG(elemVizinho, '#ffffff')
+                    mudarCorSVG(clickedIcon, '#cf0707')
+                    elem_form = document.querySelector(`#${iconFamilia}-${iconId}`)
+                    preencheFormValue(elem_form, `${iconFamilia}-${iconId}-NÃO`)
+                } 
+            }
+        }
+    </script>
+</body>
+</html>

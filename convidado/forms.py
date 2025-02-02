@@ -3,7 +3,7 @@ from .models import Convidado, Parente
 
 
 class BuscaConvidadoForm(forms.Form):
-    nome = forms.CharField(max_length=16, label="Primeiro Nome", required=True)
+    nome = forms.CharField(max_length=50, label="Primeiro Nome", required=True)
     telefone = forms.CharField(max_length=16, label="Whatsapp", required=True)
 
 

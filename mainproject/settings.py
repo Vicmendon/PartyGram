@@ -20,10 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_50es$i7=xejj!k1*i#_st9a(%k!=fu%sg$d*rh533p6qkz!b('
+from dotenv import load_dotenv
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# Carregar variáveis do arquivo .env
+load_dotenv()
+
+# Uso das variáveis no Django
+SECRET_KEY = os.getenv('SECRET_KEY', False)
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -32,6 +35,11 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
+#config de backends
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailAuthBackend',  # Backend customizado para login com e-mail
+    'django.contrib.auth.backends.ModelBackend',  # Backend padrão do Django (opcional)
+]
 
 # Application definition
 
@@ -46,7 +54,8 @@ INSTALLED_APPS = [
     'evento',
     'convidado',
     'midia',
-    'users'
+    'users',
+    'home'
 ]
 
 MIDDLEWARE = [
@@ -64,7 +73,7 @@ ROOT_URLCONF = 'mainproject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -109,6 +118,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# url de login para redirecionamento
+LOGIN_URL = "login"
+# models do user para alterar o padrao do django
+AUTH_USER_MODEL = "users.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -122,14 +135,14 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Caminho para onde os arquivos estáticos serão coletados (em produção)
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+# URL para acessar arquivos estáticos
+STATIC_URL = "/static/"
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = '/static/'
+# Diretórios onde os arquivos estáticos personalizados estão armazenados
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Diretório onde os arquivos estáticos serão coletados no ambiente de produção
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

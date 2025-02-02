@@ -1,0 +1,64 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+ENV/
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+
+# Django migrations
+**/migrations/**
+!**/migrations/__init__.py
+
+# Media and static files
+media/
+static/
+staticfiles/
+
+# VSCode
+.vscode/
+
+# IDEs
+.idea/
+
+# Environment variables
+.env
+*.env
+
+# Node modules (if using frontend with Django)
+node_modules/
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Celery beat schedule
+celerybeat-schedule
+
+# pytest
+.pytest_cache/
+
+# MyPy
+dmypy.json
+.mypy_cache/
+
+# Pipenv
+Pipfile
+Pipfile.lock
+
+# Docker
+*.pid
+
+# Local settings
+settings_local.py
+config/local_settings.py
