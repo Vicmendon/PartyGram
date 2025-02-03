@@ -24,7 +24,7 @@ class Convidado(models.Model):
 class Parente(models.Model):
     RSVP_CHOICES = [
         ('SIM', 'Vai'),
-        ('NÃO', 'Não vai'),
+        ('NAO', 'Não vai'),
         ('IND', 'Indefinido')
     ]
     

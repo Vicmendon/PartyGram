@@ -9,7 +9,8 @@ from datetime import datetime
 import threading
 import time
 import queue    # usar no próximo upgrade
-
+import re
+import unicodedata
 
 def send_message_async(whatsapp='', mensagem='', nome=''):
 
@@ -88,6 +89,15 @@ def msg_convidado_confirmado(mensagem):
 
 
 def confirma_presenca(request, hash_evento):
+    def remover_acentos(texto):
+        """Remove acentos e caracteres especiais de um texto."""
+        if not texto:
+            return ""
+        texto = texto.lower()  # Converte para minúsculas
+        texto = unicodedata.normalize("NFD", texto)
+        texto = re.sub(r"[^a-zA-Z0-9\s]", "", texto)  # Remove caracteres especiais
+        return texto
+
     evento = get_object_or_404(Festa, hash_evento=hash_evento)
     convidados = evento.convidados.all()
     mensagem = None
@@ -95,72 +105,36 @@ def confirma_presenca(request, hash_evento):
     if request.method == "POST" and "buscar" in request.POST:
         busca_form = BuscaConvidadoForm(request.POST)
         if busca_form.is_valid():
-            #print('REQUEST POST PESQUISA:', request.POST)
-            telefone = busca_form.cleaned_data['telefone']
-            nome = busca_form.cleaned_data['nome']
-            #print(nome, telefone, evento)
+            telefone = busca_form.cleaned_data["telefone"]
+            nome = busca_form.cleaned_data["nome"]
+
             try:
                 convidado = Convidado.objects.get(evento=evento, telefone=telefone)
 
-                # tratamento do nome para evitar erros do usuário
-                # REFAZ NOMES SEM ACENTUAÇÃO
-                nome_novo = ''
-                nome_db_novo = ''
-                for letra in nome:
-                    if letra.lower() in ['á', 'à', 'ã', 'â']:
-                        letra = 'a'
-                    elif letra.lower() in ['é', 'è', 'ê']:
-                        letra = 'e'
-                    elif letra.lower() in ['í', 'ì', 'î']:
-                        letra = 'i'
-                    elif letra.lower() in ['õ', 'ó', 'ò', 'ô']:
-                        letra = 'o'
-                    elif letra.lower() in ['ú', 'ù', 'û']:
-                        letra = 'u'
-                    elif letra.lower() in ['ç']:
-                        letra = 'c'
-                    
-                    nome_novo += letra
-                
-                for letra in convidado.nome:
-                    if letra.lower() in ['á', 'à', 'ã', 'â']:
-                        letra = 'a'
-                    elif letra.lower() in ['é', 'è', 'ê']:
-                        letra = 'e'
-                    elif letra.lower() in ['í', 'ì', 'î']:
-                        letra = 'i'
-                    elif letra.lower() in ['õ', 'ó', 'ò', 'ô']:
-                        letra = 'o'
-                    elif letra.lower() in ['ú', 'ù', 'û']:
-                        letra = 'u'
-                    elif letra.lower() in ['ç']:
-                        letra = 'c'
-                    
-                    nome_db_novo += letra
+                # Normaliza os nomes (minúsculas + remover acentos)
+                nome_novo = remover_acentos(nome)
+                nome_db_novo = remover_acentos(convidado.nome)
 
-                nomes_possiveis = nome_novo.split(' ')
+                # Divide os nomes e verifica se coincidem
+                nomes_possiveis = nome_novo.split()
                 for nomee in nomes_possiveis:
                     nomee = nomee.lower()
 
-                if nome_db_novo.lower() in nomes_possiveis:
-                    #print('CONVIDADO:', convidado)
+                if nome_db_novo in nomes_possiveis:
                     parentes = convidado.parentes.all()
-                    #print(parentes)
-                    for parente in parentes:
-                        print(parente.rsvp, parente.id)
-                    return render(request, 'convidado/confirmacao.html', {
-                        'evento': evento,
-                        # 'convidados': convidados,
-                        'convidado': convidado,
-                        'busca_form': busca_form,
-                        'confirma_form': ConfirmaConvidadoForm(instance=convidado),
-                        'confirmado': 'Sim',
-                        'parentes': parentes})
+                    return render(request, "convidado/confirmacao.html", {
+                        "evento": evento,
+                        "convidado": convidado,
+                        "busca_form": busca_form,
+                        "confirma_form": ConfirmaConvidadoForm(instance=convidado),
+                        "confirmado": "Sim",
+                        "parentes": parentes,
+                    })
                 else:
-                    send_message_async(telefone, '', nome)
-                    mensagem = "Convidado não encontrado." 
+                    send_message_async(telefone, "", nome)
+                    mensagem = "Convidado não encontrado."
             except Convidado.DoesNotExist:
-                send_message_async(telefone, '', nome)
+                send_message_async(telefone, "", nome)
                 mensagem = "Convidado não encontrado."
     elif request.method == "POST" and "confirmar" in request.POST:
         infos = request.POST
@@ -186,6 +160,9 @@ def confirma_presenca(request, hash_evento):
         # print(f'CONVIDADO -> {convidado}')
         convidado.rsvp = convidado_rsvp
         convidado.save()
+        
+        # MANDA WHATSAPP DE CONFIRMAÇÃO
+        msg_confirmacao = ""
 
         # MANDA WHATSAPP DE CONFIRMAÇÃO
         if convidado_rsvp == 'SIM':
@@ -201,7 +178,9 @@ def confirma_presenca(request, hash_evento):
             parente_db = get_object_or_404(Parente, id=parente['id'])
             parente_db.rsvp = parente['rsvp']
             parente_db.save()
-
+            
+            msg_confirmacao = ""
+            
             if parente['rsvp'] == 'SIM':
                 msg_confirmacao = f'Convidado {convidado.nome} {convidado.sobrenome} *confirmou* a presença de {parente_db.nome}! Whatsapp: {convidado.telefone}'
             elif parente['rsvp'] == 'NÃO':
