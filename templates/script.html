@@ -4,5 +4,11 @@
 <script src="{% static 'assets/js/owl.carousel.min.js' %}"></script>
 <script src="{% static 'assets/js/jquery.fancybox.min.js' %}"></script>
 <script src="{% static 'assets/js/custom.js' %}"></script>
-<script src="{% static 'assets/js/scripts.bundle.js' %}"></script>
+<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+<script src="{% static 'assets/js/plugins/global/plugins.bundle.js' %}"></script>
 <script src="{% static 'assets/js/widgets.bundle.js' %}"></script>
+<script src="{% static 'assets/js/scripts.bundle.js' %}"></script>
+<script src="{% static 'assets/js/custom/ckeditor.js' %}"></script>
+<script src="{% static 'assets/js/plugins/custom/datatables/datatables.bundle.js' %}"></script>
+<!--end::Global Javascript Bundle-->
+<script type="module" src="{% static 'assets/js/global.js' %}"></script>

@@ -4,24 +4,26 @@
 
 {% block content %}
 
-<section class="gap">
+<section class="mt-4 mb-4">
    <div class="container">
       <div class="row">
         <div class="col-lg-6 row">
-          <form action="{% url 'login' %}" method="POST" class='d-flex flex-column justify-content-between'>
-          <div class="col-lg-10 p-12 bg-white rounded-4">
-            <h3 class="fs-1 mb-6">Faça login na sua conta</h3>
+          <form id='loginForm' action="{% url 'login' %}" method="POST" class='d-flex justify-content-center'>
+            <div class="col-lg-10 p-12 bg-white rounded-4">
+            <h3 class="fs-1 mb-6">Faça login</h3>
               {% csrf_token %}
               <div>
-                <input  class="form-control mb-4 rounded-4" type="email" name="email" placeholder="Usuário ou endereço de e-mail">
-                <input class="form-control mb-6 rounded-4" type="password" name="senha" placeholder="Senha">
+                <div class="fv-row text-center">
+                   <input class="form-control mb-4 rounded-4 mask-email" type="email" name="email" placeholder="Endereço de e-mail">
+                   <input class="form-control mb-6 rounded-4" type="password" name="senha" placeholder="Senha">
+                </div>
                 <div class="d-flex flex-center justify-content-between mb-4">
                   <div class="form-check form-switch d-flex flex-center">
                     <input class="form-check-input" name="lembre" type="checkbox" role="switch" id="lembredemin">
                     <label class="form-check-label fs-5 ms-4" for="lembredemin">Lembre de mim</label>
                   </div>
                   <div class="second fs-5">
-                    <a href="javascript:void(0)">Esqueceu a senha?</a>
+                    <a href="{% url 'recovery' %}">Esqueceu a senha?</a>
                   </div>
                 </div>
               </div>
@@ -29,24 +31,24 @@
             </div>
           </form>
         </div>
-        <div class="col-lg-6 row border-5 border-start border-info">
-          <form action="{% url 'login' %}" method="POST" class='d-flex flex-column justify-content-between'>
+        <div class="col-lg-6 row">
+          <form id="cadastroForm" action="{% url 'register' %}" method="POST" class='d-flex justify-content-center border-5 border-start border-info'>
           <div class="col-lg-10 p-12 bg-white rounded-4">
             <h3 class="fs-1 mb-1">Cadastre-se a sua conta</h3>
             <p class=" mb-6 fs-5">Bem-vindo! Por favor, insira seus detalhes</p>
               {% csrf_token %}
-              <div>
+              <div class="fv-row text-center mb-4">
                 <div class="input-group">
                   <input class="form-control form-control-solid mb-4 rounded-4 col-md-6" type="text" name="nome" placeholder="Nome">
                   <input class="form-control form-control-solid mb-4 rounded-4 col-md-6 ms-2" type="text" name="sobrenome" placeholder="Sobrenome">
                 </div>
-                <input  class="form-control form-control-solid mb-4 rounded-4" type="email" name="email" placeholder="endereço de e-mail">
-                <input class="form-control form-control-solid mb-4 rounded-4" type="password" name="senha" placeholder="Senha">
-                <input class="form-control form-control-solid mb-6 rounded-4" type="password" name="Confirm_senha" placeholder="Confirme a senha">
+                  <input class="form-control form-control-solid mb-4 rounded-4 mask-email" type="email" name="email" placeholder="Endereço de e-mail">
+                  <input class="form-control form-control-solid mb-4 rounded-4" type="password" id="senha" name="senha" placeholder="Senha">
+                  <input class="form-control form-control-solid mb-6 rounded-4" type="password" id="confirm_senha" name="confirm_senha" placeholder="Confirme a senha">
                 <div class="d-flex flex-center justify-content-between mb-4">
                   <div class="form-check form-check-custom form-check-solid form-check">
-                    <input class="form-check-input" type="checkbox" value="" id="flexRadioLg"/>
-                    <label class="form-check-label fs-5 ms-4" for="condicao">Ao criar uma conta, você concorda com os <a href="javascript:void(0)">Termos e Condições</a> e nosso <a href="javascript:void(0)">política de Privacidade</a></label>
+                    <input class="form-check-input" name="termos" type="checkbox" value="" id="termos"/>
+                    <label class="form-check-label fs-5 ms-4" for="termo">Ao criar uma conta, você concorda com os <a href="javascript:void(0)">Termos e Condições</a> e nosso <a href="javascript:void(0)">política de Privacidade</a></label>
                 </div>
                 </div>
               </div>
@@ -60,4 +62,7 @@
 
 {% endblock %}
 
-
+{% block footer %}
+{{ block.super }}
+<script type="module" src="{% static 'assets/js/custom/acesso.js' %}"></script>
+{% endblock %}
