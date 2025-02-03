@@ -29,10 +29,24 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY', False)
 DEBUG = True
 
+CORS_ALLOWED_ORIGINS = [
+    "https://partygram.star.dev.br",  # Seu domínio
+    "http://partygram.star.dev.br",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://partygram.star.dev.br",
+    "http://partygram.star.dev.br",
+]
+
+# Se quiser permitir todas as origens (⚠️ não recomendado para produção)
+# CORS_ALLOW_ALL_ORIGINS = True  # Comente essa linha se quiser controle mais seguro
+
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    '*'
+    'partygram.star.dev.br',  # Domínio permitido
+    '138.84.58.101',  # IP do servidor permitido
 ]
 
 #config de backends
