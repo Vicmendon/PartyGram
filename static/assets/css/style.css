@@ -305,30 +305,6 @@ header {
     border-radius: 50%;
     outline: none;
 }
-.center-ber form input {
-    width: 720px;
-    height: 50px;
-    padding-left: 30px;
-    border-radius: 51px;
-    color: black;
-    border: 3px solid #9978a9;
-    outline: none;
-    background-color: transparent;
-}
-.center-ber form input::placeholder{
-    color: white;
-}
-.center-ber form button {
-    position: absolute;
-    background-color: #ff3394;
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    outline: none;
-    border: 0;
-    right: 0;
-}
 .center-ber a {
     color: white;
     display: flex;
@@ -4492,8 +4468,7 @@ button.error-button{
     border: 3px solid #ffd40d;
 }
 /* 75. header.two */
-header.two .top-bar p,header.two .ordering a,header.two .center-ber a,
-header.two .center-ber form input,header.two .center-ber form input::placeholder {
+header.two .top-bar p,header.two .ordering a,header.two .center-ber a{
     color: black;
 }
 header.two .center-ber svg {
