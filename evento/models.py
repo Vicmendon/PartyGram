@@ -32,7 +32,7 @@ class Festa(models.Model):
     GPS = models.CharField(max_length=40, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.nome} - {self.data}'
+        return f'{self.nome}'
 
     def total_convidados(self):
         return self.convidados.count() + sum([convidado.parentes.count() for convidado in self.convidados.all()])
