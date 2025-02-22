@@ -1,0 +1,234 @@
+{% load static %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria do Evento</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f0f, #2c2c2c);
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
+        }
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease-in-out;
+        }
+        .thumbnail:hover {
+            transform: scale(1.1);
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            max-width: 80%;
+            max-height: 80%;
+            display: block;
+            margin: auto;
+            border-radius: 12px;
+        }
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            z-index: 2000;
+            transition: color 0.3s;
+        }
+        .nav-left {
+            left: 10px;
+        }
+        .nav-right {
+            right: 10px;
+        }
+        .nav-arrow:hover {
+            color: #f1c40f;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+            transition: color 0.3s;
+        }
+        .close-btn:hover {
+            color: #f1c40f;
+        }
+        h2 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 40px;
+            text-align: center;
+            color: #f1c40f;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            z-index: 2000;
+            display: none;
+        }
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-right mt-4 mb-0">
+            <a href="{% url 'evento:upload' hash_evento=hash %}" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-upload"></i> Carregar fotos e vídeos
+            </a>    
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Galeria do Evento</h2>
+        </div>
+        <div class="gallery-container">
+            {% for midia in midias %}
+                {% if midia|instance_of:"Foto" %}
+                    <img src="{{ midia.get_thumbnail }}" data-full="{{ midia.get_url }}" class="thumbnail" data-id="{{ midia.id }}" data-type="foto">
+                {% elif midia|instance_of:"Video" %}
+                    <img src="{{ midia.get_thumbnail }}" data-full="{{ midia.get_url }}" class="thumbnail" data-id="{{ midia.id }}" data-type="video">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <span class="nav-arrow nav-right" onclick="nextMedia()">&#10095;</span>
+        <span class="nav-arrow nav-left" onclick="prevMedia()">&#10094;</span>
+        <div id="modal-content"></div>
+        {% if user.is_authenticated and user.is_staff %}
+            <button class="remove-btn" id="remove-btn" onclick="removeMedia()">Remover</button>
+        {% endif %}
+    </div>
+    
+
+    <script>
+        let mediaList = [];
+        let currentIndex = 0;
+        let currentMediaId = null;
+        let mediaType = '';
+
+        document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+            mediaList.push(thumb.getAttribute('data-full'));
+            thumb.addEventListener('click', function () {
+                openModal(index, thumb.getAttribute('data-id'), thumb.getAttribute('data-type'));
+            });
+        });
+
+        function openModal(index, mediaId, type) {
+            currentIndex = index;
+            currentMediaId = mediaId;
+            mediaType = type;
+            document.querySelector("#modal").classList.add("show");
+            document.querySelector("#remove-btn").style.display = "block"; // Mostrar botão de remoção
+            criaMediaDiv();
+        }
+
+        function closeModal() {
+            document.querySelector("#modal").classList.remove("show");
+            document.querySelector("#remove-btn").style.display = "none"; // Ocultar botão de remoção
+        }
+
+        function prevMedia() {
+            currentIndex = (currentIndex - 1 + mediaList.length) % mediaList.length;
+            criaMediaDiv();
+        }
+
+        function nextMedia() {
+            currentIndex = (currentIndex + 1) % mediaList.length;
+            criaMediaDiv();
+        }
+
+        function criaMediaDiv() {
+            let url_media = mediaList[currentIndex];
+            let elem_modal = document.querySelector("#modal-content");
+
+            // Limpa conteúdo atual do modal
+            elem_modal.innerHTML = '';
+
+            // Se for vídeo
+            if (url_media.includes('.mp4') || url_media.includes('.mov') || url_media.includes('.avi') || url_media.includes('.wmv') || url_media.includes('.3gp')) {
+                let elemento = `<video id="model-video" class="modal-content" src="${url_media}" controls autoplay muted></video>`;
+                elem_modal.innerHTML = elemento;
+            } else { // Se for imagem
+                let elem_img = `<img src="${url_media}" class="modal-content" alt="" width="100%" height="auto">`;
+                elem_modal.innerHTML = elem_img;
+            }
+        }
+
+        function removeMedia() {
+            if (currentMediaId) {
+                fetch(`remove_media/${mediaType}/${currentMediaId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload(); // Atualizar a galeria após remoção
+                    } else {
+                        alert('Erro ao remover a mídia');
+                    }
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
+

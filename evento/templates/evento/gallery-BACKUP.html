@@ -1,0 +1,152 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria do Evento</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+        }
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            padding: 10px;
+        }
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            cursor: pointer; 
+            border-radius: 8px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            max-width: 80%;
+            max-height: 80%;
+            display: block;
+            margin: auto;
+        }
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+            z-index: 2000;
+        }
+        .nav-left {
+            left: 10px;
+        }
+        .nav-right {
+            right: 10px;
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="text-center mt-4">Galeria do Evento</h2>
+        <div class="gallery-container">
+            {% for midia in midias %}
+                <img src="{{ midia.get_thumbnail }}" data-full="{{ midia.get_url }}" class="thumbnail">
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay flex invisible" id="modal">
+        <span class="close-btn" onclick="closeModal()">×</span>
+        <span class="nav-arrow nav-right" onclick="nextMedia()">&#10095;</span>
+        <span class="nav-arrow nav-left" onclick="prevMedia()">&#10094;</span>
+        <div id="modal-content">
+
+        </div>
+    </div>
+
+    <script>
+        let mediaList = [];
+        let currentIndex = 0;
+
+        document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+            mediaList.push(thumb.getAttribute('data-full'));
+            thumb.addEventListener('click', function () {
+                openModal(index);
+            });
+        });
+
+        function openModal(index) {
+            currentIndex = index;
+            //document.getElementById("modal-content").src = mediaList[currentIndex];
+            document.querySelector("#modal").style.display = "flex";
+            document.querySelector("#modal").classList.remove("invisible");
+
+            criaMediaDiv()
+        }
+
+        function closeModal() {
+            document.querySelector("#modal").classList.add("invisible");
+        }
+
+        function prevMedia() {
+            currentIndex = (currentIndex - 1 + mediaList.length) % mediaList.length;
+            
+            criaMediaDiv()
+        }
+
+        function nextMedia() {
+            currentIndex = (currentIndex + 1) % mediaList.length;
+            
+            criaMediaDiv()
+        }
+
+        function criaMediaDiv () {
+            let url_media = mediaList[currentIndex]
+            elem_modal = document.querySelector("#modal-content")
+            
+            // apaga imagem ou vídeo dentro do modal
+            if (elem_modal.childElementCount > 0) {
+                    elem_modal.innetHTML = "";
+                }
+
+            // se for arquivo de vídeo
+            if (url_media.includes('.mp4') || url_media.includes('.mov') || url_media.includes('.avi') || url_media.includes('.wmv') || url_media.includes('.3gp')) {
+                elemento = `<video id="model-video" class="modal-content" src="${url_media}" controls autoplay muted></video>`
+                elem_modal.innerHTML = elemento
+            } else {    // se for imagem
+                elem_img = `<img src="${url_media}" class="modal-content" alt="" width="90%" height="auto">`
+                elem_remover = ``
+                elem_modal.innerHTML = elem_img
+            }
+        }
+    </script>
+
+</body>
+</html>
