@@ -150,7 +150,6 @@ class AuthRecovery(View):
             codigo = dados.get("codigo")
             cache_key = f"codigo_verificacao_{email}"
             codigo_existente = cache.get(cache_key)
-            print(codigo_existente)
             if not codigo_existente:
                 messages.error(request, "Seu codigo de Recuperação expirou. Tente novamente.")
                 return redirect('login')

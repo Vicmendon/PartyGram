@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from home.views import index
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', index, name='index'),
@@ -24,4 +26,8 @@ urlpatterns = [
     path('convidado/', include('convidado.urls')),
     path('users/', include('users.urls')),
     path('home/', include('home.urls')),
+    path('midia/', include('midia.urls')),
+    path('evento/', include('evento.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

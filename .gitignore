@@ -23,6 +23,7 @@ db.sqlite3
 # Media and static files
 media/
 staticfiles/
+midia/eventos/
 
 # VSCode
 .vscode/
