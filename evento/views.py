@@ -21,8 +21,8 @@ def visualizar_galeria(request, hash_evento):
     uploads = Upload.objects.filter(evento=festa)
     
     # Filtra fotos e vídeos baseados nos uploads
-    fotos = Foto.objects.filter(upload__in=uploads)
-    videos = Video.objects.filter(upload__in=uploads)
+    fotos = Foto.objects.filter(upload__in=uploads, visible=True)
+    videos = Video.objects.filter(upload__in=uploads, visible=True)
 
     for foto in fotos:
         print('FOTO:', foto.imagem)
@@ -33,5 +33,10 @@ def visualizar_galeria(request, hash_evento):
     print(Video.objects.all())
 
     midias = list(fotos) + list(videos)
+    
+    #for midia in midias:
+    #    print('MÍDIA: ', midia.video)
 
-    return render(request, "evento/gallery.html", {"midias": midias, "festa": festa})
+    return render(request, "evento/gallery.html", {"midias": midias,
+                                                   "hash": hash_evento,
+                                                   "festa": festa})

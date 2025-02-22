@@ -1,7 +1,7 @@
+# midia/urls.py
 from django.urls import path
-from .views import upload_arquivos
+from . import views
 
 urlpatterns = [
-    path('evento/<str:hash_evento>/upload/', upload_arquivos, name='upload'),
-
+    #path('<str:hash_evento>/upload/', views.upload_arquivos, name='upload'),
 ]

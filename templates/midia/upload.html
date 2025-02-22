@@ -114,6 +114,13 @@
             </button>
         </form>
 
+        {% if mensagem %}
+        <div class="alert alert-success mt-4">
+            {{ mensagem }}
+        </div>
+        {% endif %}
+
+
         <!-- INFORMAÇÕES DOS ARQUIVOS -->
          <div class="pt-4" id="upload-info">
             <p>Total de arquivos: <span id="file-count">0</span></p>

@@ -45,9 +45,10 @@ def caminho_upload_videos_thumbnails(instance, filename):
 
 class Foto(models.Model):
     upload = models.ForeignKey(Upload, on_delete=models.CASCADE, related_name="fotos")  # Permite várias fotos
-    imagem = models.ImageField(upload_to=caminho_upload_fotos)
-    miniatura = models.ImageField(upload_to=caminho_upload_fotos_thumbnails, blank=True, null=True)
+    imagem = models.ImageField(upload_to=caminho_upload_fotos, max_length=500)
+    miniatura = models.ImageField(upload_to=caminho_upload_fotos_thumbnails, blank=True, null=True, max_length=500)
     descricao = models.TextField(blank=True, null=True)
+    visible = models.BooleanField(default=True)
     #curtidas = models.ManyToOneRel(User, related_name="user", )
 
     def save(self, *args, **kwargs):
@@ -81,9 +82,10 @@ class Foto(models.Model):
 
 class Video(models.Model):
     upload = models.ForeignKey("Upload", on_delete=models.CASCADE, related_name="videos")  
-    video = models.FileField(upload_to=caminho_upload_videos, max_length=300)
-    thumbnail = models.ImageField(upload_to=caminho_upload_videos_thumbnails, blank=True, null=True)
+    video = models.FileField(upload_to=caminho_upload_videos, max_length=500)
+    thumbnail = models.ImageField(upload_to=caminho_upload_videos_thumbnails, blank=True, null=True, max_length=500)
     descricao = models.TextField(blank=True, null=True)
+    visible = models.BooleanField(default=True)
     #curtidas = models.ManyToOneRel(User, related_name="user", )
 
 

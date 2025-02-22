@@ -6,14 +6,14 @@ from .models import Upload, Foto, Video
 class FotoInline(admin.TabularInline):
     model = Foto
     extra = 0
-    fields = ('imagem',)
+    fields = ('id', 'imagem', 'visible')
     fk_name = 'upload'
 
 
 class VideoInline(admin.TabularInline):
     model = Video
     extra = 0
-    fields = ('video', 'thumbnail')
+    fields = ('id', 'video', 'visible')
     fk_name = 'upload'
 
 
